@@ -1,0 +1,88 @@
+/*
+ * Mood light
+ * Change colors on RGB LEDs when pressing a pushbutton attached to pin 2.  
+ * The circuit:
+ * pushbutton attached to pin 2 from +5V
+ * 10K resistor attached to pin 2 from ground
+ * RGB Leds and chip per diagram http://tlc5940arduino.googlecode.com/svn/wiki/images/breadboard-arduino-tlc5940.png
+ */
+
+#include "Tlc5940.h"
+int buttonPin = 2;     
+int lightState =0;
+int buttonState = 0;        
+int waitPeriod =150;   
+unsigned long  prevWait =0;
+
+void setup() 
+{
+  Tlc.init();  
+  pinMode(buttonPin, INPUT);     
+  Serial.begin(9600);
+}
+
+void loop(){
+  buttonState = digitalRead(buttonPin);
+  if (buttonState == HIGH && millis()-prevWait>waitPeriod)
+  {     
+    //button pressed and we have waited long enough from any prevous pressing or noise.
+    Tlc.clear();
+    Tlc.update();  
+    lightState++;
+    prevWait = millis();
+    if(lightState>=5)
+    {
+      lightState=1;
+    }   
+  } 
+  
+
+  switch (lightState) {
+  case 1:
+    light1();
+    break;
+  case 2:
+    light2();
+    break;
+  case 3:
+    light3();
+    break;
+  case 4:
+    light4();
+    break;
+  }
+}
+
+void light1()
+{
+  Tlc.set(5, 4095);
+  Tlc.set(8, 4095);
+  Tlc.set(11, 4095);
+  Tlc.set(14, 4095);
+  Tlc.update();
+}
+
+void light2()
+{
+  Tlc.set(4, 4095);
+  Tlc.set(7, 4095);
+  Tlc.set(10, 4095);
+  Tlc.set(13, 4095);
+  Tlc.update();
+
+}
+
+void light3()
+{
+  Tlc.set(3, 4095);
+  Tlc.set(6, 4095);
+  Tlc.set(9, 4095);
+  Tlc.set(12, 4095);
+  Tlc.update();
+}
+
+void light4()
+{
+ Tlc.clear();
+  Tlc.update();
+}
